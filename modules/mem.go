@@ -1,6 +1,7 @@
-package mem
+package modules
 
 import (
+	//"psar/modules"
 	"strconv"
 	"strings"
 	"time"
@@ -82,4 +83,12 @@ func (m *Stats)TimeGap() time.Duration {
 
 func (m *Stats)Type() string {
 	return TYPE
+}
+
+func init() {
+	p := &Pack{}
+	mem := Module(&Stats{})
+	p.SetModule(&mem)
+	p.SetType(mem.Type())
+	Dpack <-p
 }

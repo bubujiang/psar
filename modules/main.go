@@ -3,8 +3,8 @@ package modules
 import (
 	"bufio"
 	"io"
-	"msar/boot"
 	"os"
+	//_ "psar/modules/mem"
 	"time"
 )
 
@@ -20,6 +20,8 @@ type Pack struct {
 	Type string
 	Module *Module
 }
+
+var Dpack  = make(chan *Pack,100)
 
 func (p *Pack)SetModule(m *Module)  {
 	p.Module = m
@@ -48,8 +50,8 @@ func (p *Pack) Run()  {
 		fi.Close()
 		//
 		//ch <- x
-		boot.Data <- *p
-		time.Sleep((*p.Module).TimeGap())
+		//boot.Data <- *p
+		//time.Sleep((*p.Module).TimeGap())
 	}
 }
 
@@ -70,4 +72,10 @@ func (p *Pack)read(fi *os.File, _handle func(string)) error {
 	}
 
 	return nil
+}
+
+func Run(){
+	for pack := range Dpack {
+		pack.Run()
+	}
 }
