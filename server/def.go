@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"flag"
@@ -19,7 +19,7 @@ type config struct {
 	PidFile string
 }
 
-func getCnf() *config {
+func GetCnf() *config {
 	c := flag.String("c","conf.ini","配置文件路径")
 	//flag.String("c","conf.ini","配置文件路径")
 	flag.Parse()
@@ -43,12 +43,13 @@ func getCnf() *config {
  */
 type Client struct {
 	conn *websocket.Conn
-	send chan []byte
+	send chan interface{}
+	hub *Hub
 }
 
 func (c *Client) readPump() {
 	defer func() {
-		//c.hub.unregister <- c
+		c.hub.unregister <- c
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -96,9 +97,9 @@ func (c *Client) writePump() {
 			//	w.Write(<-c.send)
 			//}
 
-			if err := w.Close(); err != nil {
-				return
-			}
+			//if err := w.Close(); err != nil {
+			//	return
+			//}
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {

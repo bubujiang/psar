@@ -4,14 +4,13 @@ import (
 	"bufio"
 	"io"
 	"os"
-	//_ "psar/modules/mem"
-	"time"
+	"psar/server"
 )
 
 type Module interface {
 	Handle(string)
 	FilePath() string
-	TimeGap() time.Duration
+	//TimeGap() time.Duration
 	Type() string
 }
 
@@ -43,19 +42,18 @@ func (p *Pack) Run()  {
 			//return err
 		}
 
-		err = p.read(fi,(*p.Module).Handle)
+		err = _read(fi,(*p.Module).Handle)
 		if err != nil {
 			//todo 错误处理
 		}
 		fi.Close()
-		//
-		//ch <- x
-		//boot.Data <- *p
-		//time.Sleep((*p.Module).TimeGap())
+		//todo 写入数据channel(broadcast)
+		cp := *p
+		server.Thub.Broadcast <- cp
 	}
 }
 
-func (p *Pack)read(fi *os.File, _handle func(string)) error {
+func _read(fi *os.File, _handle func(string)) error {
 
 	br := bufio.NewReader(fi)
 	for {
@@ -76,6 +74,6 @@ func (p *Pack)read(fi *os.File, _handle func(string)) error {
 
 func Run(){
 	for pack := range Dpack {
-		pack.Run()
+		go pack.Run()
 	}
 }

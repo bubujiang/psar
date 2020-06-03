@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -9,14 +9,16 @@ import (
 	"time"
 )
 
-type server struct {
+type Serv struct {
 	Ip string
 	Port uint64
 	PidFile string
 	wserv *http.Server
 }
 
-func (s *server) run(c *config) {
+var Thub *Hub
+
+func (s *Serv) Run(c *config) {
 	s.Ip = c.Ip
 	s.Port = c.Port
 	s.PidFile = c.PidFile
@@ -24,13 +26,13 @@ func (s *server) run(c *config) {
 	s._start()
 }
 
-func (s *server) _start()  {
-	hub := newHub()
-	go hub.run()
+func (s *Serv) _start()  {
+	Thub = newHub()
+	go Thub.run()
 
 	r := gin.Default()
 	r.GET("/d", func(c *gin.Context) {
-		showData(hub,c)
+		showData(Thub,c)
 	})
 	//r.Run(s.Ip+":"+strconv.FormatUint(s.Port,10))
 
@@ -53,7 +55,7 @@ func (s *server) _start()  {
 	//}()
 }
 
-func (s *server) stop() {
+func (s *Serv) stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	//todo 所有goroutine退出,清空所有相关channel
@@ -64,7 +66,7 @@ func (s *server) stop() {
 	log.Println("Server exiting")
 }
 
-func (s *server) reload() {
+func (s *Serv) reload() {
 	s.stop()
 	s._start()
 }

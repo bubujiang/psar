@@ -4,13 +4,13 @@ import (
 	//"psar/modules"
 	"strconv"
 	"strings"
-	"time"
 )
 
 const (
 	TYPE = "mem"
-	FILEPATH = "/proc/meminfo"
-	TIMEGAP = time.Microsecond * 100)
+	FILEPATH = "proc/meminfo"
+	//TIMEGAP = time.Microsecond * 100
+	)
 
 type Stats struct {
 	Frmkb uint64
@@ -70,6 +70,7 @@ func (m *Stats)Handle(line string) {
 		m.Comkb = kb
 		break
 	}
+
 	return
 }
 
@@ -77,9 +78,9 @@ func (m *Stats)FilePath() string {
 	return FILEPATH
 }
 
-func (m *Stats)TimeGap() time.Duration {
-	return TIMEGAP
-}
+//func (m *Stats)TimeGap() time.Duration {
+//	return TIMEGAP
+//}
 
 func (m *Stats)Type() string {
 	return TYPE

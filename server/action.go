@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	//"bytes"
@@ -35,7 +35,7 @@ func showData(h *Hub,con *gin.Context)  {
 		log.Println(err)
 		return
 	}
-	client := &Client{conn: conn, send: make(chan []byte, 256)}
+	client := &Client{hub: h, conn: conn, send: make(chan []byte, 256)}
 	h.register <- client
 	go client.readPump()
 	go client.writePump()

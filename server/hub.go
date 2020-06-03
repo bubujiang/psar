@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"psar/modules"
@@ -12,7 +12,7 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// 写入监测数据
-	broadcast chan []byte
+	Broadcast chan interface{}
 
 	// Register requests from the clients.
 	register chan *Client
@@ -23,7 +23,7 @@ type Hub struct {
 
 func newHub() *Hub {
 	return &Hub{
-		broadcast:  make(chan []byte),
+		Broadcast:  make(chan interface{},1000),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
@@ -59,7 +59,7 @@ func (h *Hub) run() {
 }
 
 func (h *Hub) dispatch() {
-	for message := range h.broadcast {
+	for message := range h.Broadcast {
 		for client := range h.clients {
 			select {
 			case client.send <- message:
