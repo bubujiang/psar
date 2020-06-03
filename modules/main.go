@@ -2,9 +2,10 @@ package modules
 
 import (
 	"bufio"
+	//"encoding/json"
 	"io"
 	"os"
-	"psar/server"
+	//"psar/server"
 )
 
 type Module interface {
@@ -34,7 +35,7 @@ func (p *Pack) SetType(t string)  {
 	p.Type = t
 }
 
-func (p *Pack) Run()  {
+func (p *Pack) Run(addc func(*Pack))  {
 	for{
 		fi, err := os.Open((*p.Module).FilePath())
 		if err != nil {
@@ -48,8 +49,12 @@ func (p *Pack) Run()  {
 		}
 		fi.Close()
 		//todo 写入数据channel(broadcast)
-		cp := *p
-		server.Thub.Broadcast <- cp
+		addc(p)
+		//cp := *p
+		//d,_ := json.Marshal(cp)
+		////todo 错误处理
+		//server.Thub.Broadcast <- d
+		//h.Broadcast <- d
 	}
 }
 
@@ -72,8 +77,8 @@ func _read(fi *os.File, _handle func(string)) error {
 	return nil
 }
 
-func Run(){
-	for pack := range Dpack {
-		go pack.Run()
-	}
-}
+//func Run(){
+//	for pack := range Dpack {
+//		go pack.Run()
+//	}
+//}

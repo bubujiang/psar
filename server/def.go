@@ -43,7 +43,7 @@ func GetCnf() *config {
  */
 type Client struct {
 	conn *websocket.Conn
-	send chan interface{}
+	send chan []byte
 	hub *Hub
 }
 

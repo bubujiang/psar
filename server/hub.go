@@ -1,6 +1,7 @@
 package server
 
 import (
+	"encoding/json"
 	"psar/modules"
 	"sync"
 )
@@ -12,7 +13,7 @@ type Hub struct {
 	clients map[*Client]bool
 
 	// 写入监测数据
-	Broadcast chan interface{}
+	Broadcast chan []byte
 
 	// Register requests from the clients.
 	register chan *Client
@@ -23,7 +24,7 @@ type Hub struct {
 
 func newHub() *Hub {
 	return &Hub{
-		Broadcast:  make(chan interface{},1000),
+		Broadcast:  make(chan []byte,1000),
 		register:   make(chan *Client),
 		unregister: make(chan *Client),
 		clients:    make(map[*Client]bool),
@@ -38,7 +39,19 @@ func (h *Hub) run() {
 		case client := <-h.register:
 			h.clients[client] = true
 			//todo 启动监测
-			startOnce.Do(modules.Run)
+			startOnce.Do(func() {
+
+				for pack := range modules.Dpack {
+					go pack.Run(func(p *modules.Pack) {
+						cp := *p
+						d,_ := json.Marshal(cp)
+						//todo 错误处理
+						h.Broadcast <- d
+					})
+				}
+
+				//modules.Run()
+			})
 		case client := <-h.unregister:
 			if _, ok := h.clients[client]; ok {
 				delete(h.clients, client)
