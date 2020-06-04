@@ -2,6 +2,7 @@ package server
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
@@ -27,6 +28,7 @@ func (s *Serv) Run(c *config) {
 }
 
 func (s *Serv) _start()  {
+	fmt.Println(">>>server start")
 	Thub = newHub()
 	go Thub.run()
 

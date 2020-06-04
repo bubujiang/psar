@@ -91,5 +91,5 @@ func init() {
 	mem := Module(&Stats{})
 	p.SetModule(&mem)
 	p.SetType(mem.Type())
-	Dpack <-p
+	Dpack = append(Dpack, p)
 }

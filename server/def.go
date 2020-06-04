@@ -49,7 +49,9 @@ type Client struct {
 
 func (c *Client) readPump() {
 	defer func() {
+		fmt.Println(">>>断开1")
 		c.hub.unregister <- c
+		fmt.Println(">>>断开2")
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -63,6 +65,7 @@ func (c *Client) readPump() {
 			}
 			break
 		}
+		//if x ==
 		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
 		//c.hub.broadcast <- message
 	}

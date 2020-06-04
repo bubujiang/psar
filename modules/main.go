@@ -21,7 +21,7 @@ type Pack struct {
 	Module *Module
 }
 
-var Dpack  = make(chan *Pack,100)
+var Dpack []*Pack
 
 func (p *Pack)SetModule(m *Module)  {
 	p.Module = m
