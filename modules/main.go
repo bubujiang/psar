@@ -35,7 +35,7 @@ func (p *Pack) SetType(t string)  {
 	p.Type = t
 }
 
-func (p *Pack) Run(addc func(*Pack))  {
+func (p *Pack) Run(addc func(*Pack) bool)  {
 	for{
 		fi, err := os.Open((*p.Module).FilePath())
 		if err != nil {
@@ -49,12 +49,15 @@ func (p *Pack) Run(addc func(*Pack))  {
 		}
 		fi.Close()
 		//todo 写入数据channel(broadcast)
-		addc(p)
+		r := addc(p)
+		if !r {
+			break
+		}
 		//cp := *p
 		//d,_ := json.Marshal(cp)
 		////todo 错误处理
-		//server.Thub.Broadcast <- d
-		//h.Broadcast <- d
+		//server.Thub.broadcast <- d
+		//h.broadcast <- d
 	}
 }
 
