@@ -53,11 +53,6 @@ func (p *Pack) Run(addc func(*Pack) bool)  {
 		if !r {
 			break
 		}
-		//cp := *p
-		//d,_ := json.Marshal(cp)
-		////todo 错误处理
-		//server.Thub.broadcast <- d
-		//h.broadcast <- d
 	}
 }
 

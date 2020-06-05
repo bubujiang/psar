@@ -57,7 +57,7 @@ func (h *Hub) run() {
 							d,_ := json.Marshal(cp)
 							//todo 错误处理
 							h.broadcast <- d
-							//fmt.Println(">>>写入公告")
+							fmt.Println(">>>写入公告")
 							return true
 						}
 					})
@@ -82,20 +82,13 @@ func (h *Hub) run() {
 				for {
 					select {
 					case <-h.broadcast:
+						fmt.Println(">>>清除公告")
 					default:
-						break
+						goto forEnd
 					}
 				}
+				forEnd:
 			}
-		//case message := <-h.broadcast:
-		//	for client := range h.clients {
-		//		select {
-		//		case client.send <- message:
-		//		default:
-		//			close(client.send)
-		//			delete(h.clients, client)
-		//		}
-		//	}
 		}
 	}
 }
@@ -105,10 +98,10 @@ func (h *Hub) dispatch() {
 		for client := range h.clients {
 			select {
 			case client.send <- message:
-				time.Sleep(2)
+				time.Sleep(500 * time.Millisecond)
 			default:
-				close(client.send)
-				delete(h.clients, client)
+				//close(client.send)
+				//delete(h.clients, client)
 			}
 		}
 	}
