@@ -36,15 +36,11 @@ func (s *Serv) _start()  {
 	r.GET("/d", func(c *gin.Context) {
 		showData(Thub,c)
 	})
-	//r.Run(s.Ip+":"+strconv.FormatUint(s.Port,10))
 
 	s.wserv = &http.Server{
 		Addr:    s.Ip+":"+strconv.FormatUint(s.Port,10),
 		Handler: r,
 	}
-	//s.wserv.Addr = s.Ip+":"+strconv.FormatUint(s.Port,10)
-	//s.wserv.Handler = r
-	//s.wserv.ListenAndServe()
 
 	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 		log.Fatalf("listen: %s\n", err)

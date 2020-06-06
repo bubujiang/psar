@@ -46,7 +46,7 @@ func (h *Hub) run() {
 				fmt.Println(">>>启动监测")
 				isRun = make(chan int)
 				for _,pack := range modules.Dpack {
-					fmt.Println(">>>下一个模块1")
+					fmt.Println(">>>下一个模块"+pack.Type)
 					go pack.Run(func(p *modules.Pack) bool {
 						//fmt.Println(">>>启动监测"+p.Type)
 						select {
@@ -57,17 +57,15 @@ func (h *Hub) run() {
 							d,_ := json.Marshal(cp)
 							//todo 错误处理
 							h.broadcast <- d
+							time.Sleep(500 * time.Millisecond)
 							fmt.Println(">>>写入公告")
 							return true
 						}
 					})
-					fmt.Println(">>>下一个模块2")
 				}
-				fmt.Println(">>>注册客户端完毕3")
 			}
-			fmt.Println(">>>注册客户端完毕1")
 			h.clients[client] = true
-			fmt.Println(">>>注册客户端完毕2")
+			fmt.Println(">>>注册客户端完毕")
 
 		case client := <-h.unregister:
 			fmt.Println(">>>注销客户端")
@@ -98,7 +96,7 @@ func (h *Hub) dispatch() {
 		for client := range h.clients {
 			select {
 			case client.send <- message:
-				time.Sleep(500 * time.Millisecond)
+				//time.Sleep(500 * time.Millisecond)
 			default:
 				//close(client.send)
 				//delete(h.clients, client)

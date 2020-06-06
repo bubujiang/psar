@@ -7,9 +7,7 @@ import (
 )
 
 const (
-	TYPE = "mem"
-	FILEPATH = "proc/meminfo"
-	//TIMEGAP = time.Microsecond * 100
+	MEMPATH = "proc/meminfo"
 	)
 
 type Stats struct {
@@ -75,7 +73,7 @@ func (m *Stats)Handle(line string) {
 }
 
 func (m *Stats)FilePath() string {
-	return FILEPATH
+	return MEMPATH
 }
 
 //func (m *Stats)TimeGap() time.Duration {
@@ -83,7 +81,7 @@ func (m *Stats)FilePath() string {
 //}
 
 func (m *Stats)Type() string {
-	return TYPE
+	return "mem"
 }
 
 func init() {
