@@ -42,18 +42,18 @@ func (s *Serv) _start()  {
 		Handler: r,
 	}
 
-	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("listen: %s\n", err)
-	}
+	//if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	//	log.Fatalf("listen: %s\n", err)
+	//}
 
-	//go func() {
-	//	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-	//		log.Fatalf("listen: %s\n", err)
-	//	}
-	//}()
+	go func() {
+		if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("listen: %s\n", err)
+		}
+	}()
 }
 
-func (s *Serv) stop() {
+func (s *Serv) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	//todo 所有goroutine退出,清空所有相关channel
@@ -64,7 +64,7 @@ func (s *Serv) stop() {
 	log.Println("Server exiting")
 }
 
-func (s *Serv) reload() {
-	s.stop()
+func (s *Serv) Reload() {
+	s.Stop()
 	s._start()
 }
