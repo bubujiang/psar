@@ -76,10 +76,6 @@ func (m *Stats)FilePath() string {
 	return MEMPATH
 }
 
-//func (m *Stats)TimeGap() time.Duration {
-//	return TIMEGAP
-//}
-
 func (m *Stats)Type() string {
 	return "mem"
 }

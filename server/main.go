@@ -42,15 +42,15 @@ func (s *Serv) _start()  {
 		Handler: r,
 	}
 
-	//if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-	//	log.Fatalf("listen: %s\n", err)
-	//}
+	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+		log.Fatalf("listen: %s\n", err)
+	}
 
-	go func() {
-		if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("listen: %s\n", err)
-		}
-	}()
+	//go func() {
+	//	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+	//		log.Fatalf("listen: %s\n", err)
+	//	}
+	//}()
 }
 
 func (s *Serv) Stop() {
