@@ -1,7 +1,6 @@
 package server
 
 import (
-	//"bytes"
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/websocket"
 	"log"
@@ -32,7 +31,7 @@ var upgrader = websocket.Upgrader{
 func showData(h *Hub,con *gin.Context)  {
 	conn, err := upgrader.Upgrade(con.Writer, con.Request, nil)
 	if err != nil {
-		log.Println(err)
+		log.Printf("error: %v", err)
 		return
 	}
 	client := &Client{hub: h, conn: conn, send: make(chan []byte, 256)}

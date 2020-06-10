@@ -2,10 +2,9 @@ package server
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
-	"log"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 )
@@ -23,12 +22,10 @@ func (s *Serv) Run(c *config) {
 	s.Ip = c.Ip
 	s.Port = c.Port
 	s.PidFile = c.PidFile
-	//s.wserv = &http.Server{}
 	s._start()
 }
 
 func (s *Serv) _start()  {
-	fmt.Println(">>>server start")
 	Thub = newHub()
 	go Thub.run()
 
@@ -42,26 +39,22 @@ func (s *Serv) _start()  {
 		Handler: r,
 	}
 
-	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatalf("listen: %s\n", err)
-	}
-
-	//go func() {
-	//	if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-	//		log.Fatalf("listen: %s\n", err)
-	//	}
-	//}()
+	go func() {
+		if err := s.wserv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			panic(err)
+		}
+	}()
 }
 
 func (s *Serv) Stop() {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	//todo 所有goroutine退出,清空所有相关channel
+
 	if err := s.wserv.Shutdown(ctx); err != nil {
-		log.Fatal("Server forced to shutdown:", err)
+		panic(err)
 	}
 
-	log.Println("Server exiting")
+	os.Exit(0)
 }
 
 func (s *Serv) Reload() {

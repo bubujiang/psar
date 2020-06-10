@@ -2,11 +2,9 @@ package server
 
 import (
 	"flag"
-	"fmt"
 	"github.com/gorilla/websocket"
 	"gopkg.in/ini.v1"
 	"log"
-	"os"
 	"time"
 )
 
@@ -21,19 +19,20 @@ type config struct {
 
 func GetCnf() *config {
 	c := flag.String("c","conf.ini","配置文件路径")
-	//flag.String("c","conf.ini","配置文件路径")
 	flag.Parse()
 
 	cfg, err := ini.Load(*c)
 	if err != nil {
-		fmt.Printf("Fail to read file: %v", err)
-		os.Exit(1)
+		panic(err)
 	}
 
 	cnf := &config{}
 	cnf.Ip = cfg.Section("server").Key("ip").String()
-	cnf.Port,_ = cfg.Section("server").Key("port").Uint64()
 	cnf.PidFile = cfg.Section("").Key("pid_file").String()
+	cnf.Port,err = cfg.Section("server").Key("port").Uint64()
+	if err != nil {
+		panic(err)
+	}
 
 	return cnf
 }
@@ -49,9 +48,7 @@ type Client struct {
 
 func (c *Client) readPump() {
 	defer func() {
-		fmt.Println(">>>断开1")
 		c.hub.unregister <- c
-		fmt.Println(">>>断开2")
 		c.conn.Close()
 	}()
 	c.conn.SetReadLimit(maxMessageSize)
@@ -65,9 +62,6 @@ func (c *Client) readPump() {
 			}
 			break
 		}
-		//if x ==
-		//message = bytes.TrimSpace(bytes.Replace(message, newline, space, -1))
-		//c.hub.broadcast <- message
 	}
 }
 
@@ -82,7 +76,6 @@ func (c *Client) writePump() {
 		case message, ok := <-c.send:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if !ok {
-				// The hub closed the channel.
 				c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 				return
 			}
@@ -92,17 +85,6 @@ func (c *Client) writePump() {
 				return
 			}
 			w.Write(message)
-
-			// Add queued chat messages to the current websocket message.
-			//n := len(c.send)
-			//for i := 0; i < n; i++ {
-			//	w.Write(newline)
-			//	w.Write(<-c.send)
-			//}
-
-			//if err := w.Close(); err != nil {
-			//	return
-			//}
 		case <-ticker.C:
 			c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 			if err := c.conn.WriteMessage(websocket.PingMessage, nil); err != nil {

@@ -2,7 +2,9 @@ package modules
 
 import (
 	"bufio"
+	"github.com/pkg/errors"
 	"io"
+	"log"
 	"net/http"
 	"os"
 	"strings"
@@ -40,17 +42,15 @@ func (p *Pack) Run(addc func(*Pack) bool)  {
 		if i==-1{
 			fi, err = os.Open((*p.Module).FilePath())
 			if err != nil {
-				//todo 错误处理
+				log.Printf("error: %v", err)
 				return
 			}
-			//fi = fi.(*os.File)
 		} else {
 			fi, err = http.Get((*p.Module).FilePath())
 			if err != nil {
-				//todo 错误处理
+				log.Printf("error: %v", err)
 				return
 			}
-			//fi = fi.(*http.Response)
 		}
 
 		switch fi.(type) {
@@ -63,24 +63,11 @@ func (p *Pack) Run(addc func(*Pack) bool)  {
 			fi.(*http.Response).Body.Close()
 		}
 
-		//if fi,ok := fi.(*http.Response);ok{
-		//	err = _read(fi.Body,(*p.Module).Handle)
-		//}else {
-		//	err = _read(fi,(*p.Module).Handle)
-		//}
-
 		if err != nil {
-			//todo 错误处理
+			log.Printf("error: %v", err)
+			return
 		}
 
-		switch fi.(type) {
-		case io.Closer:
-			fi.(io.Closer).Close()
-			break
-		default:
-			fi.(*http.Response).Body.Close()
-		}
-		//todo 写入数据channel(broadcast)
 		r := addc(p)
 		if !r {
 			break
@@ -97,7 +84,6 @@ func _read(fi interface{}, _handle func(string)) error {
 				if err == io.EOF{
 					break
 				}
-				//todo 错误处理
 				return err
 			}
 
@@ -106,7 +92,6 @@ func _read(fi interface{}, _handle func(string)) error {
 
 		return nil
 	}else {
-		//todo 错误处理
-		return nil
+		return errors.New("类型错误.")
 	}
 }

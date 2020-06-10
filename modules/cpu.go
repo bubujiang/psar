@@ -31,9 +31,7 @@ func (m *StatsCpu)Handle(line string) {
 	for i,d := range fields[1:] {
 		kd,err := strconv.ParseUint(d,10,64)
 		if err != nil {
-			//todo 错误处理
 			return
-			//break
 		}
 		switch i {
 		case 0:
