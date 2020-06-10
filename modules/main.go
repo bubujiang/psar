@@ -43,21 +43,31 @@ func (p *Pack) Run(addc func(*Pack) bool)  {
 				//todo 错误处理
 				return
 			}
-			fi = fi.(*os.File)
+			//fi = fi.(*os.File)
 		} else {
 			fi, err = http.Get((*p.Module).FilePath())
 			if err != nil {
 				//todo 错误处理
 				return
 			}
-			fi = fi.(*http.Response)
+			//fi = fi.(*http.Response)
 		}
 
-		if fi,ok := fi.(*http.Response);ok{
-			err = _read(fi.Body,(*p.Module).Handle)
-		}else {
+		switch fi.(type) {
+		case io.Closer:
 			err = _read(fi,(*p.Module).Handle)
+			fi.(io.Closer).Close()
+			break
+		default:
+			err = _read(fi.(*http.Response).Body,(*p.Module).Handle)
+			fi.(*http.Response).Body.Close()
 		}
+
+		//if fi,ok := fi.(*http.Response);ok{
+		//	err = _read(fi.Body,(*p.Module).Handle)
+		//}else {
+		//	err = _read(fi,(*p.Module).Handle)
+		//}
 
 		if err != nil {
 			//todo 错误处理
